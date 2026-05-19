@@ -38,6 +38,11 @@ class DataIngestion:
             df=pd.read_csv('notebook/data/Churn_Modelling.csv')
             #loggs it
             logging.info('Read the dataset as dataframe')
+            #apply feature Engineering
+            df['ProductUsage'] = df['NumOfProducts'] * df['IsActiveMember']
+            df['AgeGroup'] = pd.cut(df['Age'], bins=[18,25,35,45,55,65,75,85,95], labels = ['18-25','26-35','36-45','46-55','56-65','66-75', '76-85', '86-95'])
+            df['TenureGroup'] = pd.cut(df['Tenure'], bins=[0,2,5,7,10], labels = ['0-2','3-5','6-7','8-10'])
+
             #This line creates the folder (directory) needed to store the file path.
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok = True)
             #saves the dataframe as a csv, the path is assigned via: self.ingestion_config.raw_data_path and remove index that was added pandas dataframe
@@ -64,6 +69,6 @@ class DataIngestion:
         
 
 #test data ingestion ->create test.csv and train.csv
-#if __name__=='__main__':
-#    obj=DataIngestion()
-#    obj.initiate_data_ingestion()
+if __name__=='__main__':
+    obj=DataIngestion()
+    obj.initiate_data_ingestion()

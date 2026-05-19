@@ -7,9 +7,9 @@ from src.exception import CustomException
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
-#from src.components.data_transformation import DataTransformation
-#from src.components.model_trainer import ModelTrainerConfig
-#from src.components.model_trainer import ModelTrainer
+from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 
 class DataIngestionConfig:
     # This creates a file path for train.csv, test.csv and data.csv inside the artifacts folder.
@@ -42,6 +42,8 @@ class DataIngestion:
             df['ProductUsage'] = df['NumOfProducts'] * df['IsActiveMember']
             df['AgeGroup'] = pd.cut(df['Age'], bins=[18,25,35,45,55,65,75,85,95], labels = ['18-25','26-35','36-45','46-55','56-65','66-75', '76-85', '86-95'])
             df['TenureGroup'] = pd.cut(df['Tenure'], bins=[0,2,5,7,10], labels = ['0-2','3-5','6-7','8-10'])
+            df = df.drop("RowNumber", axis=1)
+            df = df.drop("Surname", axis=1)
 
             #This line creates the folder (directory) needed to store the file path.
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok = True)
@@ -71,4 +73,13 @@ class DataIngestion:
 #test data ingestion ->create test.csv and train.csv
 if __name__=='__main__':
     obj=DataIngestion()
-    obj.initiate_data_ingestion()
+    #old test
+    #obj.initiate_data_ingestion()
+    train_data,test_data=obj.initiate_data_ingestion()
+
+    data_transformation = DataTransformation()
+    
+    train_arr,test_arr,_=data_transformation.initiate_data_transformation(train_data,test_data)
+
+    modeltrainer=ModelTrainer()
+    print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
